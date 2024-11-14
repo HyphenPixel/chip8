@@ -41,6 +41,8 @@ typedef struct {
 void debug(Chip8* cpu);
 #endif
 
+Chip8 initChip8(void);
+void loadRom(Chip8* cpu, const char* romFile);
 uint16_t fetch_opcode(Chip8* cpu);
 void decode_opcode(Chip8* cpu, uint16_t opcode);
 void execute_instruction(Chip8* cpu);

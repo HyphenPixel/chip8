@@ -3,6 +3,44 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define LOAD_ADDRESS 0x200
+
+void loadRom(Chip8* cpu, const char* romFile) {
+    FILE* rom = fopen(romFile, "rb");
+    if (rom == NULL) {
+        perror("Error opening file");
+        return;
+    }
+    fseek(rom, 0, SEEK_END);
+    size_t romSize = ftell(rom);
+    fseek(rom, 0, SEEK_SET);
+
+    if (romSize > (sizeof(cpu->ram) - LOAD_ADDRESS)) {
+        fprintf(stderr, "ERROR: ROM is to large for available memory!\n");
+        fclose(rom);
+        return;
+    }
+
+    fread(&cpu->ram[LOAD_ADDRESS], sizeof(unsigned char), romSize, rom);
+
+    fclose(rom);
+}
+
+Chip8 initChip8(void) {
+    Chip8 c = {0};
+    memset(c.vram,  0, sizeof(c.vram));
+    memset(c.ram,   0, sizeof(c.ram));
+    memset(c.v,     0, sizeof(c.v));
+    memset(c.stack, 0, sizeof(c.stack));
+    c.sp = 0;
+    c.i = 0;
+    c.pc = 0x200;
+    c.keyboard = 0;
+    c.delay_timer = 0;
+    c.sound_timer = 0;
+    return c;
+}
+
 uint16_t fetch_opcode(Chip8* cpu) {
     uint8_t high = cpu->ram[cpu->pc];
     cpu->pc++;
