@@ -5,6 +5,7 @@ uint16_t fetch_opcode(Chip8* cpu) {
     uint8_t high = cpu->ram[cpu->pc];
     cpu->pc++;
     uint8_t low = cpu->ram[cpu->pc];
+    cpu->pc++;
     return TO_16BIT(high, low);
 }
 
@@ -50,7 +51,6 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
         default:
             printf("Invalid or not implemented", cpu->ram[cpu->pc]);
     }
-    cpu->pc++;
 }
 
 void execute_instruction(Chip8* cpu) {
