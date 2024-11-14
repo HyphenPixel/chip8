@@ -104,7 +104,7 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
         case 0xC:
             cpu->v[vx] = (uint8_t)rand() & GET_BYTE(opcode, 0);
             break;
-        case 0xD: // TODO
+        case 0xD:
             cpu->v[0xF] = 0;
             for (int row = 0; row < GET_NIBBLE(opcode, 0); ++row) {
                 uint8_t spriteByte = cpu->ram[cpu->i + row];
