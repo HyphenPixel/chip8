@@ -1,5 +1,7 @@
 #include <chip8.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 uint16_t fetch_opcode(Chip8* cpu) {
     uint8_t high = cpu->ram[cpu->pc];
@@ -23,7 +25,7 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
                     cpu->sp--;
                     break;
                 default:
-                    printf("Invalid or not implemented", cpu->ram[cpu->pc]);
+                    printf("Invalid or not implemented");
             }
             break;
         case 1:
@@ -34,36 +36,36 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
             cpu->sp++;
             break;
         case 3:
-            if (cpu->v[GET_NIBBLE(opcode, 2)] == GET_BYTE(opcode, 0))
+            if (cpu->v[vx] == GET_BYTE(opcode, 0))
                 cpu->pc += 2;
             break;
         case 4:
-            if (cpu->v[GET_NIBBLE(opcode, 2)] != GET_BYTE(opcode, 0))
+            if (cpu->v[vx] != GET_BYTE(opcode, 0))
                 cpu->pc += 2;
             break;
         case 5:
-            if (cpu->v[GET_NIBBLE(opcode, 2)] != cpu->v[GET_NIBBLE(opcode, 1)])
+            if (cpu->v[vx] == cpu->v[vy])
                 cpu->pc += 2;
             break;
         case 6:
-            cpu->v[GET_NIBBLE(opcode, 2)] = GET_BYTE(opcode, 0);
+            cpu->v[vx] = GET_BYTE(opcode, 0);
             break;
         case 7:
-            cpu->v[GET_NIBBLE(opcode, 2)] += GET_BYTE(opcode, 0);
+            cpu->v[vx] = GET_BYTE(opcode, 0);
             break;
         case 8:
             switch (GET_NIBBLE(opcode, 0)) {
                 case 0:
-                    cpu->v[GET_NIBBLE(opcode, 2)] = cpu->v[GET_NIBBLE(opcode, 1)];
+                    cpu->v[vx] = cpu->v[vy];
                     break;
                 case 1:
-                    cpu->v[GET_NIBBLE(opcode, 2)] |= cpu->v[GET_NIBBLE(opcode, 1)];
+                    cpu->v[vx] |= cpu->v[vy];
                     break;
                 case 2:
-                    cpu->v[GET_NIBBLE(opcode, 2)] &= cpu->v[GET_NIBBLE(opcode, 1)];
+                    cpu->v[vx] &= cpu->v[vy];
                     break;
                 case 3:
-                    cpu->v[GET_NIBBLE(opcode, 2)] ^= cpu->v[GET_NIBBLE(opcode, 1)];
+                    cpu->v[vx] ^= cpu->v[vy];
                     break;
                 case 4:
                     cpu->v[0xF] = cpu->v[vx] + cpu->v[vy] > 0xFF ? 1 : 0;
@@ -77,7 +79,7 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
                     cpu->v[0xF] = CHECK_BIT(cpu->v[vx], 0) ? 1 : 0;
                     cpu->v[vx] >>= 1;
                     break;
-                case 7:
+                case 7: // ! May be incorrect
                     cpu->v[0xF] = (cpu->v[vx]) < (cpu->v[vy]) ? 1 : 0;
                     cpu->v[vx] = cpu->v[vx] - cpu->v[vy];
                     break;
@@ -86,11 +88,29 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
                     cpu->v[vx] <<= 1;
                     break;
                 default:
-                    printf("Invalid or not implemented", cpu->ram[cpu->pc]);
+                    printf("Invalid or not implemented");
+            }
+            break;
+        case 9:
+            if (cpu->v[vx] != cpu->v[vy])
+                cpu->pc += 2;
+            break;
+        case 0xA:
+            cpu->i = TO_12BIT(opcode);
+            break;
+        case 0xB:
+            cpu->pc = TO_12BIT(opcode) + cpu->v[0];
+            break;
+        case 0xC:
+            cpu->v[vx] = (uint8_t)rand() & GET_BYTE(opcode, 0);
+            break;
+        case 0xD: // TODO
+            for (size_t i = 0; i < sizeof(cpu->vram)/sizeof(cpu->vram[0]); ++i) {
+                cpu->vram[i] ^= 1;
             }
             break;
         default:
-            printf("Invalid or not implemented", cpu->ram[cpu->pc]);
+            printf("Invalid or not implemented");
     }
 }
 
@@ -101,7 +121,7 @@ void execute_instruction(Chip8* cpu) {
 
 #ifdef DEBUG
 void debug(Chip8* cpu) {
-    printf("PC: 0x%04X \t| OP: 0x%04X ", cpu->pc, cpu->ram[cpu->pc]);
+    printf("PC: 0x%03X \t| OP: 0x%03X ", cpu->pc, cpu->ram[cpu->pc]);
 }
 #endif
 
