@@ -34,8 +34,6 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
         case 3:
             if (cpu->v[GET_NIBBLE(opcode, 2)] == GET_BYTE(opcode, 0))
                 cpu->pc += 2;
-            printf("\nPC: Skipped \t| OP: 0x%04x \n", cpu->ram[cpu->pc-1]);
-            printf("PC: Skipped \t| OP: 0x%04x", cpu->ram[cpu->pc]);
             break;
         case 4:
             if (cpu->v[GET_NIBBLE(opcode, 2)] != GET_BYTE(opcode, 0))
@@ -61,9 +59,17 @@ void execute_instruction(Chip8* cpu) {
     decode_opcode(cpu, opcode);
 }
 
+#ifdef DEBUG
+void debug(Chip8* cpu) {
+    printf("PC: 0x%04X \t| OP: 0x%04X ", cpu->pc, cpu->ram[cpu->pc]);
+}
+#endif
+
 void cycle_cpu(Chip8* cpu, uint64_t cycles) {
     for (size_t i = 0; i < cycles; ++i) {
-        printf("PC: 0x%04x \t| OP: 0x%04x ", cpu->pc, cpu->ram[cpu->pc]);
+        #ifdef DEBUG
+        debug(cpu);
+        #endif
         execute_instruction(cpu);
         printf("\n");
     }
