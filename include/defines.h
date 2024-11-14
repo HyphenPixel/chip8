@@ -1,6 +1,6 @@
 #pragma once
 
-#define CHECK_BIT(reg, bit_to_check) (reg & bit_to_check != 0)
+#define CHECK_BIT(reg, bit_to_check) (reg & (1 << bit_to_check) != 0)
 #define SET_BIT(reg, bit_to_set) (reg |= bit_to_set)
 #define CLEAR_BIT(reg, bit_to_clear) (reg &= ~bit_to_clear)
 #define TO_16BIT(high_byte, low_byte) ((high_byte << 8) | low_byte)
