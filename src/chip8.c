@@ -105,8 +105,21 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
             cpu->v[vx] = (uint8_t)rand() & GET_BYTE(opcode, 0);
             break;
         case 0xD: // TODO
-            for (size_t i = 0; i < sizeof(cpu->vram)/sizeof(cpu->vram[0]); ++i) {
-                cpu->vram[i] ^= 1;
+            cpu->v[0xF] = 0;
+            for (int row = 0; row < GET_NIBBLE(opcode, 0); ++row) {
+                uint8_t spriteByte = cpu->ram[cpu->i + row];
+                for (int col = 0; col < 8; ++col) {
+                    uint8_t spritePixel = (spriteByte >> (7 - col)) & 1;
+                    int x = (vx + col) % 64;
+                    int y = (vy + row) % 32;
+
+                    int screenIndex = y * 64 + x;
+
+                    if (spritePixel && cpu->vram[screenIndex] == 1)
+                        cpu->v[0xF] = 0;
+
+                    cpu->vram[screenIndex] ^= spritePixel;
+                }
             }
             break;
         default:
