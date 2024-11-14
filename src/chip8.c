@@ -160,6 +160,18 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
                 }
             }
             break;
+        case 0xE:
+            switch (GET_BYTE(opcode, 0)) {
+                case 0x9E:
+                    // TODO
+                    break;
+            }
+        case 0xF:
+            switch (GET_BYTE(opcode, 0)) {
+                case 0x07:
+                    // TODO
+                    break;
+            }
         default:
             printf("Invalid or not implemented");
     }
