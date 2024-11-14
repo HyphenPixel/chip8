@@ -21,12 +21,12 @@ void update(Canvas* canvas) {
 void draw(Canvas* canvas, Chip8* cpu) {
     BeginTextureMode(canvas->surface);
         ClearBackground(canvas->color[1]);
-        for (size_t i = 0; i < sizeof(cpu->vram)/sizeof(cpu->vram[0]); ++i)
-            if (cpu->vram[i] == 1) {
-                size_t x = i % 64;
-                size_t y = i / 64;
+        for (size_t i = 0; i < sizeof(cpu->vram)/sizeof(cpu->vram[0]); ++i) {
+            size_t x = i % 64;
+            size_t y = i / 64;
+            if (cpu->vram[i] == 1)
                 DrawPixel(x, y, canvas->color[0]);
-            }
+        }
     EndTextureMode();
 
     BeginDrawing();
