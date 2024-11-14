@@ -48,6 +48,9 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
         case 6:
             cpu->v[GET_NIBBLE(opcode, 2)] = GET_BYTE(opcode, 0);
             break;
+        case 7:
+            cpu->v[GET_NIBBLE(opcode, 2)] += GET_BYTE(opcode, 0);
+            break;
         default:
             printf("Invalid or not implemented", cpu->ram[cpu->pc]);
     }
