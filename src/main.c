@@ -4,21 +4,35 @@
 #include <keyboard.h>
 
 int main(int argc, char *argv[]) {
-    int cycles = 0xFFF;
-    Chip8 chip8 = initChip8();
-    
-    if (argc > 0)
-        loadRom(&chip8, argv[1]);
+    // Initialize the chip8 interpreter
+    Chip8* cpu = initChip8();
+    if (argc == 2)
+        loadRom(cpu, argv[1]);
+    else
+        fprintf(stderr, "Too many arguments!");
 
-    Canvas c = initCanvas(WHITE, BLACK);
+    // Initialize Raylib window and Canvas struct
+    InitWindow(1280, 720, "Chip8");
+    SetTargetFPS(60);
+    Canvas* canvas = initCanvas(WHITE, BLACK);
 
+    // Main loop
     while (!WindowShouldClose()) {
-        chip8.delay_timer--;
-        chip8.sound_timer--;
         getKey();
-        cycle_cpu(&chip8);
-        draw(&c, &chip8);
+        cycle_cpu(cpu);
+
+        if (cpu->delay_timer > 0)
+            --cpu->delay_timer;
+        if (cpu->sound_timer > 0)
+            --cpu->sound_timer;
+
+        draw(canvas, cpu);
     }
-    cleanupCanvas(&c);
+
+    // Cleanup
+    cleanupCanvas(canvas);
+    free(cpu);
+
+    CloseWindow();
     return 0;
 }
