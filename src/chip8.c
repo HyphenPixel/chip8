@@ -254,6 +254,7 @@ void debug(Chip8* cpu) {
 
 void cycle_cpu(Chip8* cpu) {
     if (cpu->halted == 0) {
+        srand((uint8_t)time(NULL));
         #ifdef DEBUG
         debug(cpu);
         #endif
