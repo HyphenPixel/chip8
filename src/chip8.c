@@ -31,26 +31,17 @@ void loadRom(Chip8* cpu, const char* romFile) {
     fclose(rom);
 }
 
-Chip8 initChip8(void) {
-    Chip8 c = {0};
-    memset(c.vram,  0, sizeof(c.vram));
-    memset(c.ram,   0, sizeof(c.ram));
-    memset(c.v,     0, sizeof(c.v));
-    memset(c.stack, 0, sizeof(c.stack));
+Chip8* initChip8(void) {
+    Chip8* cpu = (Chip8 *)malloc(sizeof(Chip8));
+    memset(cpu, 0, sizeof(Chip8)); // Zero out struct data
 
-    c.halted = 0;
-    c.stack[0] = 0x200;
-    c.sp = 0;
-    c.i = 0;
-    c.pc = 0x200;
-    c.delay_timer = 0;
-    c.sound_timer = 0;
+    cpu->pc = 0x200;
 
-    if (FONT_START_ADDRESS + sizeof(font)/sizeof(font[0]) > sizeof(c.ram)/sizeof(c.ram[0]) == 0)
+    if (FONT_START_ADDRESS + sizeof(font)/sizeof(font[0]) > sizeof(cpu->ram)/sizeof(cpu->ram[0]) == 0)
         for (size_t i = 0; i < sizeof(font)/sizeof(font[0]); ++i)
-            c.ram[FONT_START_ADDRESS + i] = font[i]; 
+            cpu->ram[FONT_START_ADDRESS + i] = font[i]; 
             
-    return c;
+    return cpu;
 }
 
 uint16_t fetch_opcode(Chip8* cpu) {
