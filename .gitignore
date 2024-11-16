@@ -57,3 +57,4 @@ output/*
 *.c8
 build
 Makefile
+*.make
