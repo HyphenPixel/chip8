@@ -1,17 +1,15 @@
 #include <display.h>
 #include <chip8.h>
 
-Canvas initCanvas(Color c1, Color c2) {
-    InitWindow(1280, 720, "Chip8");
-    SetTargetFPS(60);
-    Canvas c = {0};
-    c.color[0] = c1;
-    c.color[1] = c2;
-    c.surface = LoadRenderTexture(64, 32);
-    c.surface_source = (Rectangle){0.0f, 0.0f, (float)c.surface.texture.width, -(float)c.surface.texture.height};
-    c.surface_position = (Rectangle){0.0f, 0.0f, GetScreenWidth(), GetScreenHeight()};
-    c.origin = (Vector2){0.0f, 0.0f};
-    return c;
+Canvas* initCanvas(Color c1, Color c2) {
+    Canvas* canvas = (Canvas*)malloc(sizeof(Canvas));
+    canvas->color[0] = c1;
+    canvas->color[1] = c2;
+    canvas->surface = LoadRenderTexture(64, 32);
+    canvas->surface_source = (Rectangle){0.0f, 0.0f, (float)canvas->surface.texture.width, -(float)canvas->surface.texture.height};
+    canvas->surface_position = (Rectangle){0.0f, 0.0f, GetScreenWidth(), GetScreenHeight()};
+    canvas->origin = (Vector2){0.0f, 0.0f};
+    return canvas;
 }
 
 void update(Canvas* canvas) {
@@ -37,5 +35,5 @@ void draw(Canvas* canvas, Chip8* cpu) {
 
 void cleanupCanvas(Canvas* canvas) {
     UnloadRenderTexture(canvas->surface);
-    CloseWindow();
+    free(canvas);
 }
