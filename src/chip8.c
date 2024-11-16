@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <keyboard.h>
+#include <unistd.h>
 
 #define LOAD_ADDRESS 0x200
 
