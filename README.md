@@ -13,8 +13,11 @@ Build Instructions:
 git clone https://github.com/HyphenPixel/chip8.git
 cd chip8
 premake5 gmake2
-make config=release # Change 'release' to 'debug' if you want to build with debugging
+
+# Change 'release' to 'debug' if you want to build with debugging
+make config=release
 ```
+The program will be put in the ouput directory in either Release or Debug depening on the configuration
 
 ### Platform availablity
  - [x] Linux
