@@ -1,74 +1,73 @@
 #
-# 'make'        build executable file 'main'
+# 'make'        build executable file 'main' without DEBUG
+# 'make debug'  build executable file 'main' with DEBUG
 # 'make clean'  removes all .o and executable files
 #
 
 # define the C compiler to use
 CC = gcc
 
-# define any compile-time flags
-CFLAGS	:= -Wall -Wextra -g -DDEBUG
+# define common compile-time flags
+CFLAGS := -Wall -Wextra -g
 
 # define library paths in addition to /usr/lib
-#   if I wanted to include libraries not in /usr/lib I'd specify
-#   their path using -Lpath, something like:
 LFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 # define output directory
-OUTPUT	:= output
+OUTPUT := output
 
 # define source directory
-SRC		:= src
+SRC := src
 
 # define include directory
-INCLUDE	:= include
+INCLUDE := include
 
 # define lib directory
-LIB		:= lib
+LIB := lib
 
 ifeq ($(OS),Windows_NT)
-MAIN	:= main.exe
-SOURCEDIRS	:= $(SRC)
-INCLUDEDIRS	:= $(INCLUDE)
-LIBDIRS		:= $(LIB)
-FIXPATH = $(subst /,\,$1)
-RM			:= del /q /f
-MD	:= mkdir
+MAIN := main.exe
+SOURCEDIRS := $(SRC)
+INCLUDEDIRS := $(INCLUDE)
+LIBDIRS := $(LIB)
+FIXPATH = $(subst /,\\,$1)
+RM := del /q /f
+MD := mkdir
 else
-MAIN	:= main
-SOURCEDIRS	:= $(shell find $(SRC) -type d)
-INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
-LIBDIRS		:= $(shell find $(LIB) -type d)
+MAIN := main
+SOURCEDIRS := $(shell find $(SRC) -type d)
+INCLUDEDIRS := $(shell find $(INCLUDE) -type d)
+LIBDIRS := $(shell find $(LIB) -type d)
 FIXPATH = $1
 RM = rm -f
-MD	:= mkdir -p
+MD := mkdir -p
 endif
 
 # define any directories containing header files other than /usr/include
-INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
+INCLUDES := $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 
 # define the C libs
-LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
+LIBS := $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 # define the C source files
-SOURCES		:= $(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
+SOURCES := $(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
 
 # define the C object files 
-OBJECTS		:= $(SOURCES:.c=.o)
+OBJECTS := $(SOURCES:.c=.o)
 
 # define the dependency output files
-DEPS		:= $(OBJECTS:.o=.d)
+DEPS := $(OBJECTS:.o=.d)
 
-#
-# The following part of the makefile is generic; it can be used to 
-# build any executable just by changing the definitions above and by
-# deleting dependencies appended to the file from 'make depend'
-#
+OUTPUTMAIN := $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
-OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
-
+# Default target: Build without DEBUG
 all: $(OUTPUT) $(MAIN)
-	@echo Executing 'all' complete!
+	@echo Build complete without DEBUG!
+
+# Build with DEBUG flag
+debug: CFLAGS += -DDEBUG
+debug: $(OUTPUT) $(MAIN)
+	@echo Build complete with DEBUG!
 
 $(OUTPUT):
 	$(MD) $(OUTPUT)
@@ -79,13 +78,9 @@ $(MAIN): $(OBJECTS)
 # include all .d files
 -include $(DEPS)
 
-# this is a suffix replacement rule for building .o's and .d's from .c's
-# it uses automatic variables $<: the name of the prerequisite of
-# the rule(a .c file) and $@: the name of the target of the rule (a .o file) 
-# -MMD generates dependency output files same name as the .o file
-# (see the gnu make manual section about automatic variables)
+# rule for building .o and .d files from .c
 .c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c -MMD $<  -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c -MMD $< -o $@
 
 .PHONY: clean
 clean:
@@ -96,4 +91,4 @@ clean:
 
 run: all
 	./$(OUTPUTMAIN)
-	@echo Executing 'run: all' complete!
+	@echo Executing 'run' complete!
