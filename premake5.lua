@@ -1,16 +1,18 @@
 ---@diagnostic disable: undefined-global, undefined-field
 workspace "Chip8"
     configurations {"Debug", "Release"}
+    location "build"
 
     includedirs {"include"}
 
     filter "configurations:Debug"
         defines {"DEBUG"}
         symbols "On"
+        warnings "Everything"
         targetdir "output/debug"
     
     filter "configurations:Release"
-        flags {"NoWarnings"}
+        warnings "Off"
         optimize "Full"
         targetdir "output/release"
 
@@ -18,6 +20,7 @@ project "Chip8"
     kind "ConsoleApp"
     language "C"
     location "build"
+    libdirs {os.findlib("raylib")}
     files {
         "**.h",
         "src/**.c"
@@ -31,4 +34,3 @@ project "Chip8"
         "rt", 
         "X11"
     }
-    libdirs {os.findlib("raylib")}
