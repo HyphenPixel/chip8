@@ -23,12 +23,12 @@ project "Chip8"
         "src/**.c"
     }
     links {
-        "-lraylib", 
-        "-lGL", 
-        "-lm", 
-        "-lpthread", 
-        "-ldl", 
-        "-lrt", 
-        "-lX11"
+        "raylib", 
+        "GL", 
+        "m", 
+        "pthread", 
+        "dl", 
+        "rt", 
+        "X11"
     }
     libdirs {os.findlib("raylib")}
