@@ -9,9 +9,12 @@ A few prerequisites:
 3. GCC or Clang
 
 Build Instructions:
-1. `cd <project/dir>`
-2. `premake5 gmake2`
-3. `make config=<configuration>`
+```bash
+git clone https://github.com/HyphenPixel/chip8.git
+cd chip8
+premake5 gmake2
+make config=release # Change 'release' to 'debug' if you want to build with debugging
+```
 
 ### Platform availablity
  - [x] Linux
