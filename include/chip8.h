@@ -5,7 +5,7 @@
 #include <defines.h>
 #include <string.h>
 
-static uint8_t font[] = {
+static const uint8_t font[] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
     0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -34,7 +34,7 @@ typedef struct {
     uint16_t    stack[16];
     uint16_t    i;
     uint16_t    pc;
-    uint16_t    keyboard;
+    uint8_t     halted;
 } Chip8;
 
 #ifdef DEBUG
@@ -46,4 +46,4 @@ void loadRom(Chip8* cpu, const char* romFile);
 uint16_t fetch_opcode(Chip8* cpu);
 void decode_opcode(Chip8* cpu, uint16_t opcode);
 void execute_instruction(Chip8* cpu);
-void cycle_cpu(Chip8* cpu, uint64_t cycles);
+void cycle_cpu(Chip8* cpu);
