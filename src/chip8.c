@@ -6,6 +6,8 @@
 #include <unistd.h>
 
 #define LOAD_ADDRESS 0x200
+#define FONT_SPRITE_HEIGHT 5
+#define FONT_START_ADDRESS 0x000
 
 void loadRom(Chip8* cpu, const char* romFile) {
     FILE* rom = fopen(romFile, "rb");
