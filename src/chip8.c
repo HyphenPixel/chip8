@@ -19,6 +19,7 @@ void loadRom(Chip8* cpu, const char* romFile) {
     size_t romSize = ftell(rom);
     fseek(rom, 0, SEEK_SET);
 
+    // Most chip8 programs start at address 0x200
     if (romSize > (sizeof(cpu->ram) - LOAD_ADDRESS)) {
         fprintf(stderr, "ERROR: ROM is to large for available memory!\n");
         fclose(rom);
