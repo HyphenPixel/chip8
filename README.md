@@ -17,7 +17,7 @@ premake5 gmake2
 # Change 'release' to 'debug' if you want to build with debugging
 make config=release
 ```
-The program will be put in the ouput directory in either Release or Debug depening on the configuration
+The program will be put in the ouput directory in either Release or Debug depending on the configuration
 
 ### Platform availablity
  - [x] Linux
