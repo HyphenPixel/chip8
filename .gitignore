@@ -53,8 +53,7 @@ dkms.conf
 
 # Other
 output/*
-*.rom
-*.c8
 build
 Makefile
 *.make
+roms
