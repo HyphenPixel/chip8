@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <display.h>
 #include <keyboard.h>
-
+#include <math.h>
 
 // -----------------------------
 // from https://www.raylib.com/examples.html
