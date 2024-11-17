@@ -39,19 +39,19 @@ Chip8* initChip8(void) {
     return cpu;
 }
 
-uint16_t fetch_opcode(Chip8* cpu) {
+u16 fetch_opcode(Chip8* cpu) {
     if (cpu->pc >= 0xFFF)
         return 0;
-    uint8_t high = cpu->ram[cpu->pc];
+    u8 high = cpu->ram[cpu->pc];
     cpu->pc++;
-    uint8_t low = cpu->ram[cpu->pc];
+    u8 low = cpu->ram[cpu->pc];
     cpu->pc++;
     return TO_16BIT(high, low);
 }
 
-void decode_opcode(Chip8* cpu, uint16_t opcode) {
-    uint8_t vx = GET_NIBBLE(opcode, 2);
-    uint8_t vy = GET_NIBBLE(opcode, 1);
+void decode_opcode(Chip8* cpu, u16 opcode) {
+    u8 vx = GET_NIBBLE(opcode, 2);
+    u8 vy = GET_NIBBLE(opcode, 1);
     switch (GET_NIBBLE(opcode, 3)) {
         case 0:
             switch (TO_12BIT(opcode)) {
@@ -146,15 +146,15 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
             cpu->pc = TO_12BIT(opcode) + cpu->v[0];
             break;
         case 0xC:
-            cpu->v[vx] = (uint8_t)rand() & GET_BYTE(opcode, 0);
+            cpu->v[vx] = (u8)rand() & GET_BYTE(opcode, 0);
             break;
         case 0xD:
             cpu->v[0xF] = 0;
             
             for (int row = 0; row < GET_NIBBLE(opcode, 0); ++row) {
-                uint8_t spriteByte = cpu->ram[cpu->i + row];
+                u8 spriteByte = cpu->ram[cpu->i + row];
                 for (int col = 0; col < 8; ++col) {
-                    uint8_t spritePixel = (spriteByte >> (7 - col)) & 1;
+                    u8 spritePixel = (spriteByte >> (7 - col)) & 1;
                     int x = (cpu->v[vx] + col) % 64;
                     int y = (cpu->v[vy] + row) % 32;
 
@@ -170,10 +170,12 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
         case 0xE:
             switch (GET_BYTE(opcode, 0)) {
                 case 0x9E:
-                    // TODO
+                    if (keyMap[GetKeyPressed()] == cpu->v[vx])
+                        cpu->pc += 2;
                     break;
                 case 0xA1:
-                    // TODO
+                    if (keyMap[GetKeyPressed()] != cpu->v[vx])
+                        cpu->pc += 2;
                     break;
                 default:
                     printf("Invalid or not implemented");
@@ -185,7 +187,8 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
                     cpu->v[vx] = cpu->delay_timer;
                     break;
                 case 0x0A:
-                    // TODO
+                    cpu->waiting = 1;
+                    cpu->waitReg = vx;
                     break;
                 case 0x15:
                     cpu->delay_timer = cpu->v[vx];
@@ -200,7 +203,19 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
                     cpu->i = FONT_START_ADDRESS + (cpu->v[vx] * FONT_SPRITE_HEIGHT);
                     break;
                 case 0x33:
-                    // TODO
+                    uint8_t value = cpu->v[vx];
+                    uint8_t digits[3] = { 
+                        value / 100, 
+                        (value / 10) % 10,
+                        value % 10
+                        };
+                    for (size_t i = 0; i < 3; ++i) {
+                        if (cpu->i + i >= sizeof(cpu->ram)/sizeof(cpu->ram[0])){
+                            fprintf(stderr, "Error: Memory access out of bounds");
+                            return;
+                        }
+                        cpu->ram[cpu->i + i] = digits[i];
+                    }
                     break;
                 case 0x55:
                     for (size_t i = 0; i < sizeof(cpu->v)/sizeof(cpu->v[0]); ++i)
@@ -220,7 +235,7 @@ void decode_opcode(Chip8* cpu, uint16_t opcode) {
 }
 
 void execute_instruction(Chip8* cpu) {
-    uint16_t opcode = fetch_opcode(cpu);
+    u16 opcode = fetch_opcode(cpu);
     decode_opcode(cpu, opcode);
 }
 
@@ -239,14 +254,31 @@ void debug(Chip8* cpu) {
 #endif
 
 void cycle_cpu(Chip8* cpu) {
-    if (cpu->halted == 0) {
-        srand((uint8_t)time(NULL));
+    if (cpu->halted == 0 && cpu->waiting == 0) {
+        if (cpu->delay_timer > 0)
+            --cpu->delay_timer;
+        if (cpu->sound_timer > 0)
+            --cpu->sound_timer;
+
+        srand((u8)time(NULL));
+
         #ifdef DEBUG
         debug(cpu);
         #endif
+
         execute_instruction(cpu);
+
         #ifdef DEBUG
         printf("\n");
         #endif
+    } else if (cpu->waiting == 1) { // TODO
+        for(size_t i = 0; i < sizeof(keyMap)/sizeof(keyMap[0]); ++i)
+            if (IsKeyDown(keyMap[i])) {
+                cpu->v[cpu->waitReg] = i;
+                cpu->waiting = false;
+                break;
+            } else {
+                cpu->waiting = true;
+            }
     }
 }
