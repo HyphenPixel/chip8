@@ -30,6 +30,7 @@ void draw(Canvas* canvas, Chip8* cpu) {
     BeginDrawing();
         ClearBackground(BLACK);
         DrawTexturePro(canvas->surface.texture, canvas->surface_source, canvas->surface_position, canvas->origin, 0.0f, WHITE);
+        DrawFPS(8, 8);
     EndDrawing();
 }
 
