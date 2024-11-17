@@ -55,6 +55,7 @@ dkms.conf
 output
 build
 Makefile
+.vscode
 *.make
 *.cfg
 roms
