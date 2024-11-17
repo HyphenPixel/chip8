@@ -14,15 +14,19 @@ git clone https://github.com/HyphenPixel/chip8.git
 cd chip8
 
 # You can choose either GCC or Clang (Default: GCC)
-premake cc '<gcc|clang>'
+premake5 cc '<gcc|clang>'
 
-# Generates GNU make files
-premake5 gmake2
+# Generates make files with a specified configuration and generator (i.e. gmake2, vs2022, etc...)
+# (Defaults: config=Debug, generator=gmake2)
+premake5 build --config='<Release|Debug>' --generator='<generator>'
 
-# Builds the project (Default: release)
-make config='<release|debug>'
+# Runs the interpreter with the specified rom file
+# (Defaults: config=Debug, rom=None)
+premake5 run --config='<Release|Debug>' --rom='<rom file>'
 ```
 The program will be put in the output directory in either Release or Debug depending on the configuration
+
+If you want to code your own roms or download some premade test roms you can go here [](https://chipo.ber.gp/)
 
 ### Platform availablity
  - [x] Linux
