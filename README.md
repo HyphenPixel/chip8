@@ -24,6 +24,8 @@ premake5 build --config='<Release|Debug>' --generator='<generator>'
 # (Defaults: config=Debug, rom=None)
 premake5 run --config='<Release|Debug>' --rom='<rom file>'
 ```
+To run the interpreter you can either use `premake5 run --config='<Release|Debug>' --rom='<rom file>'` or `./output/<configuration>/Chip8 <path/to/rom_file>`
+
 The program will be put in the output directory in either Release or Debug depending on the configuration
 
 If you want to code your own roms or download some premade test roms you can go here [https://chipo.ber.gp/](https://chipo.ber.gp/)
