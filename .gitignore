@@ -57,3 +57,4 @@ build
 Makefile
 *.make
 roms
+obj
