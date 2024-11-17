@@ -38,7 +38,7 @@ newaction {
 }
 
 workspace "Chip8"
-    configurations { "Debug", "Release" }
+    configurations { "Release", "Debug" }
 
 project "Chip8"
     kind "ConsoleApp"
