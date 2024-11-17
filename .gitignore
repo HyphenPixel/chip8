@@ -56,5 +56,6 @@ output/*
 build
 Makefile
 *.make
+*.cfg
 roms
 obj
