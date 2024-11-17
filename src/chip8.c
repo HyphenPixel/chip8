@@ -120,7 +120,7 @@ void decode_opcode(Chip8* cpu, u16 opcode) {
                     cpu->v[x] += cpu->v[y];
                     cpu->pc += 2;
                     break;}
-                case 5:{ // ! May be incorrect
+                case 5:{
                     cpu->v[0xF] = (cpu->v[x]) > (cpu->v[y]) ? 1 : 0;
                     cpu->v[x] -= cpu->v[y];
                     cpu->pc += 2;
@@ -130,7 +130,7 @@ void decode_opcode(Chip8* cpu, u16 opcode) {
                     cpu->v[x] >>= 1;
                     cpu->pc += 2;
                     break;}
-                case 7:{ // ! May be incorrect
+                case 7:{
                     cpu->v[0xF] = (cpu->v[y]) > (cpu->v[x]) ? 1 : 0;
                     cpu->v[x] -= cpu->v[y];
                     cpu->pc += 2;
@@ -167,7 +167,7 @@ void decode_opcode(Chip8* cpu, u16 opcode) {
                 u8 spriteByte = cpu->ram[cpu->i + row];
                 for (int col = 0; col < 8; ++col) {
                     u8 spritePixel = (spriteByte >> (7 - col)) & 1;
-                    int scr_x = (cpu->v[x] + col) % 64; // !
+                    int scr_x = (cpu->v[x] + col) % 64;
                     int scr_y = (cpu->v[y] + row) % 32;
 
                     int screenIndex = scr_y * 64 + scr_x;
