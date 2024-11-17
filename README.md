@@ -26,7 +26,7 @@ premake5 run --config='<Release|Debug>' --rom='<rom file>'
 ```
 The program will be put in the output directory in either Release or Debug depending on the configuration
 
-If you want to code your own roms or download some premade test roms you can go here [](https://chipo.ber.gp/)
+If you want to code your own roms or download some premade test roms you can go here [https://chipo.ber.gp/](https://chipo.ber.gp/)
 
 ### Platform availablity
  - [x] Linux
