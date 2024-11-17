@@ -52,7 +52,7 @@ Mkfile.old
 dkms.conf
 
 # Other
-output/*
+output
 build
 Makefile
 *.make
