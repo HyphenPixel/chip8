@@ -12,10 +12,6 @@ Canvas* initCanvas(Color c1, Color c2) {
     return canvas;
 }
 
-void update(Canvas* canvas) {
-
-}
-
 void draw(Canvas* canvas, Chip8* cpu) {
     BeginTextureMode(canvas->surface);
         ClearBackground(canvas->color[1]);

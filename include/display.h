@@ -11,6 +11,5 @@ typedef struct {
 } Canvas;
 
 Canvas* initCanvas(Color c1, Color c2);
-void update(Canvas* canvas);
 void draw(Canvas* canvas, Chip8* cpu);
 void cleanupCanvas(Canvas* canvas);
