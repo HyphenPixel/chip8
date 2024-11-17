@@ -32,7 +32,7 @@ Chip8* initChip8(void) {
 
     cpu->pc = 0x200;
 
-    if (FONT_START_ADDRESS + sizeof(font)/sizeof(font[0]) > sizeof(cpu->ram)/sizeof(cpu->ram[0]) == 0)
+    if ((FONT_START_ADDRESS + sizeof(font)/sizeof(font[0])) > sizeof(cpu->ram)/sizeof(cpu->ram[0]) == 0)
         for (size_t i = 0; i < sizeof(font)/sizeof(font[0]); ++i)
             cpu->ram[FONT_START_ADDRESS + i] = font[i]; 
             
@@ -41,31 +41,24 @@ Chip8* initChip8(void) {
 
 u16 fetch_opcode(Chip8* cpu) {
     if (cpu->pc >= 0xFFF)
-        return 0;
-    u8 high = cpu->ram[cpu->pc];
-    cpu->pc++;
-    u8 low = cpu->ram[cpu->pc];
-    cpu->pc++;
-    return TO_16BIT(high, low);
+        return 1;
+    return TO_16BIT(cpu->ram[cpu->pc], cpu->ram[cpu->pc + 1]);
 }
 
 void decode_opcode(Chip8* cpu, u16 opcode) {
-    u8 vx = GET_NIBBLE(opcode, 2);
-    u8 vy = GET_NIBBLE(opcode, 1);
+    u8 x = GET_NIBBLE(opcode, 2);
+    u8 y = GET_NIBBLE(opcode, 1);
     switch (GET_NIBBLE(opcode, 3)) {
         case 0:
             switch (TO_12BIT(opcode)) {
                 case 0x00E0:
                     memset(cpu->vram, 0, sizeof(cpu->vram));
+                    cpu->pc += 2;
                     break;
                 case 0x00EE:
-                    if (cpu->sp - 1 < 0) {
-                        cpu->halted = 1;
-                        fprintf(stderr, "Halted");
-                    } else {
-                        cpu->sp--;
-                        cpu->pc = cpu->stack[cpu->sp];
-                    }
+                    cpu->pc = cpu->stack[cpu->sp];
+                    cpu->sp--;
+                    cpu->pc += 2;
                     break;
                 default:
                     printf("Invalid or not implemented");
@@ -75,78 +68,95 @@ void decode_opcode(Chip8* cpu, u16 opcode) {
             cpu->pc = TO_12BIT(opcode);
             break;
         case 2:
-            cpu->stack[cpu->sp] = cpu->pc;
             cpu->sp++;
+            cpu->stack[cpu->sp] = cpu->pc;
             cpu->pc = TO_12BIT(opcode);
             break;
         case 3:
-            if (cpu->v[vx] == GET_BYTE(opcode, 0))
+            if (cpu->v[x] == GET_BYTE(opcode, 0))
                 cpu->pc += 2;
+            cpu->pc += 2;
             break;
         case 4:
-            if (cpu->v[vx] != GET_BYTE(opcode, 0))
+            if (cpu->v[x] != GET_BYTE(opcode, 0))
                 cpu->pc += 2;
+            cpu->pc += 2;
             break;
         case 5:
-            if (cpu->v[vx] == cpu->v[vy])
+            if (cpu->v[x] == cpu->v[y])
                 cpu->pc += 2;
+            cpu->pc += 2;
             break;
         case 6:
-            cpu->v[vx] = GET_BYTE(opcode, 0);
+            cpu->v[x] = GET_BYTE(opcode, 0);
+            cpu->pc += 2;
             break;
         case 7:
-            cpu->v[vx] += GET_BYTE(opcode, 0);
+            cpu->v[x] += GET_BYTE(opcode, 0);
+            cpu->pc += 2;
             break;
         case 8:
             switch (GET_NIBBLE(opcode, 0)) {
                 case 0:
-                    cpu->v[vx] += cpu->v[vy];
+                    cpu->v[x] = cpu->v[y];
+                    cpu->pc += 2;
                     break;
                 case 1:
-                    cpu->v[vx] |= cpu->v[vy];
+                    cpu->v[x] |= cpu->v[y];
+                    cpu->pc += 2;
                     break;
                 case 2:
-                    cpu->v[vx] &= cpu->v[vy];
+                    cpu->v[x] &= cpu->v[y];
+                    cpu->pc += 2;
                     break;
                 case 3:
-                    cpu->v[vx] ^= cpu->v[vy];
+                    cpu->v[x] ^= cpu->v[y];
+                    cpu->pc += 2;
                     break;
                 case 4:
-                    cpu->v[0xF] = cpu->v[vx] + cpu->v[vy] > 0xFF ? 1 : 0;
-                    cpu->v[vx] += cpu->v[vy];
+                    cpu->v[0xF] = (cpu->v[x] + cpu->v[y] > 0xFF) ? 1 : 0;
+                    cpu->v[x] += cpu->v[y];
+                    cpu->pc += 2;
                     break;
                 case 5: // ! May be incorrect
-                    cpu->v[0xF] = (cpu->v[vx]) > (cpu->v[vy]) ? 1 : 0;
-                    cpu->v[vx] -= cpu->v[vy];
+                    cpu->v[0xF] = (cpu->v[x]) > (cpu->v[y]) ? 1 : 0;
+                    cpu->v[x] -= cpu->v[y];
+                    cpu->pc += 2;
                     break;
                 case 6:
-                    cpu->v[0xF] = CHECK_BIT(cpu->v[vx], 0) ? 1 : 0;
-                    cpu->v[vx] >>= 1;
+                    cpu->v[0xF] = cpu->v[x] & 0x1;
+                    cpu->v[x] >>= 1;
+                    cpu->pc += 2;
                     break;
                 case 7: // ! May be incorrect
-                    cpu->v[0xF] = (cpu->v[vx]) < (cpu->v[vy]) ? 1 : 0;
-                    cpu->v[vx] -= cpu->v[vy];
+                    cpu->v[0xF] = (cpu->v[y]) > (cpu->v[x]) ? 1 : 0;
+                    cpu->v[x] -= cpu->v[y];
+                    cpu->pc += 2;
                     break;
                 case 0xE:
-                    cpu->v[0xF] = CHECK_BIT(cpu->v[vx], 7) ? 1 : 0;
-                    cpu->v[vx] <<= 1;
+                    cpu->v[0xF] = (cpu->v[x] >> 7) & 0x1;
+                    cpu->v[x] <<= 1;
+                    cpu->pc += 2;
                     break;
                 default:
                     printf("Invalid or not implemented");
             }
             break;
         case 9:
-            if (cpu->v[vx] != cpu->v[vy])
+            if (cpu->v[x] != cpu->v[y])
                 cpu->pc += 2;
+            cpu->pc += 2;
             break;
         case 0xA:
             cpu->i = TO_12BIT(opcode);
+            cpu->pc += 2;
             break;
         case 0xB:
             cpu->pc = TO_12BIT(opcode) + cpu->v[0];
             break;
         case 0xC:
-            cpu->v[vx] = (u8)rand() & GET_BYTE(opcode, 0);
+            cpu->v[x] = ((u8)rand() % 256) & GET_BYTE(opcode, 0);
+            cpu->pc += 2;
             break;
         case 0xD:
             cpu->v[0xF] = 0;
@@ -155,10 +165,10 @@ void decode_opcode(Chip8* cpu, u16 opcode) {
                 u8 spriteByte = cpu->ram[cpu->i + row];
                 for (int col = 0; col < 8; ++col) {
                     u8 spritePixel = (spriteByte >> (7 - col)) & 1;
-                    int x = (cpu->v[vx] + col) % 64;
-                    int y = (cpu->v[vy] + row) % 32;
+                    int scr_x = (cpu->v[x] + col) % 64; // !
+                    int scr_y = (cpu->v[y] + row) % 32;
 
-                    int screenIndex = y * 64 + x;
+                    int screenIndex = scr_y * 64 + scr_x;
 
                     if (spritePixel && cpu->vram[screenIndex] == 1)
                         cpu->v[0xF] = 1;
@@ -166,16 +176,21 @@ void decode_opcode(Chip8* cpu, u16 opcode) {
                     cpu->vram[screenIndex] ^= spritePixel;
                 }
             }
+            cpu->pc += 2;
             break;
         case 0xE:
             switch (GET_BYTE(opcode, 0)) {
                 case 0x9E:
-                    if (keyMap[GetKeyPressed()] == cpu->v[vx])
+                    if (IsKeyDown(keyMap[cpu->v[x]])) {
                         cpu->pc += 2;
+                    }
+                    cpu->pc += 2;
                     break;
                 case 0xA1:
-                    if (keyMap[GetKeyPressed()] != cpu->v[vx])
+                    if (IsKeyDown(keyMap[cpu->v[x]])) {
                         cpu->pc += 2;
+                    }
+                    cpu->pc += 2;
                     break;
                 default:
                     printf("Invalid or not implemented");
@@ -184,26 +199,35 @@ void decode_opcode(Chip8* cpu, u16 opcode) {
         case 0xF:
             switch (GET_BYTE(opcode, 0)) {
                 case 0x07:
-                    cpu->v[vx] = cpu->delay_timer;
+                    cpu->v[x] = cpu->delay_timer;
+                    cpu->pc += 2;
                     break;
                 case 0x0A:
-                    cpu->waiting = 1;
-                    cpu->waitReg = vx;
+                   for (size_t i = 0; i < 16; ++i)
+                        if (IsKeyDown(keyMap[i])) {
+                            cpu->v[x] = i;
+                            cpu->pc += 2;
+                            break;
+                        }
                     break;
                 case 0x15:
-                    cpu->delay_timer = cpu->v[vx];
+                    cpu->delay_timer = cpu->v[x];
+                    cpu->pc += 2;
                     break;
                 case 0x18:
-                    cpu->sound_timer = cpu->v[vx];
+                    cpu->sound_timer = cpu->v[x];
+                    cpu->pc += 2;
                     break;
                 case 0x1E:
-                    cpu->i += cpu->v[vx];
+                    cpu->i += cpu->v[x];
+                    cpu->pc += 2;
                     break;
                 case 0x29:
-                    cpu->i = FONT_START_ADDRESS + (cpu->v[vx] * FONT_SPRITE_HEIGHT);
+                    cpu->i = FONT_START_ADDRESS + (cpu->v[x] * FONT_SPRITE_HEIGHT);
+                    cpu->pc += 2;
                     break;
                 case 0x33:
-                    uint8_t value = cpu->v[vx];
+                    uint8_t value = cpu->v[x];
                     uint8_t digits[3] = { 
                         value / 100, 
                         (value / 10) % 10,
@@ -216,14 +240,17 @@ void decode_opcode(Chip8* cpu, u16 opcode) {
                         }
                         cpu->ram[cpu->i + i] = digits[i];
                     }
+                    cpu->pc += 2;
                     break;
                 case 0x55:
                     for (size_t i = 0; i < sizeof(cpu->v)/sizeof(cpu->v[0]); ++i)
                         cpu->ram[cpu->i + i] = cpu->v[i];
+                    cpu->pc += 2;
                     break;
                 case 0x65:
                     for (size_t i = 0; i < sizeof(cpu->v)/sizeof(cpu->v[0]); ++i)
                         cpu->v[i] = cpu->ram[cpu->i + i];
+                    cpu->pc += 2;
                     break;
                 default:
                     printf("Invalid or not implemented");
@@ -232,6 +259,10 @@ void decode_opcode(Chip8* cpu, u16 opcode) {
         default:
             printf("Invalid or not implemented");
     }
+    if (cpu->delay_timer > 0)
+        --cpu->delay_timer;
+    if (cpu->sound_timer > 0)
+        --cpu->sound_timer;
 }
 
 void execute_instruction(Chip8* cpu) {
@@ -249,36 +280,20 @@ void debug(Chip8* cpu) {
         printf("V%lX: 0x%02X ",i , cpu->v[i]);
     }
     printf("\nI: 0x%04X\n", cpu->i);
-    sleep(1);
+    //sleep(1);
 }
 #endif
 
 void cycle_cpu(Chip8* cpu) {
-    if (cpu->halted == 0 && cpu->waiting == 0) {
-        if (cpu->delay_timer > 0)
-            --cpu->delay_timer;
-        if (cpu->sound_timer > 0)
-            --cpu->sound_timer;
+    srand((u8)time(NULL));
 
-        srand((u8)time(NULL));
+    #ifdef DEBUG
+    debug(cpu);
+    #endif
 
-        #ifdef DEBUG
-        debug(cpu);
-        #endif
+    execute_instruction(cpu);
 
-        execute_instruction(cpu);
-
-        #ifdef DEBUG
-        printf("\n");
-        #endif
-    } else if (cpu->waiting == 1) { // TODO
-        for(size_t i = 0; i < sizeof(keyMap)/sizeof(keyMap[0]); ++i)
-            if (IsKeyDown(keyMap[i])) {
-                cpu->v[cpu->waitReg] = i;
-                cpu->waiting = false;
-                break;
-            } else {
-                cpu->waiting = true;
-            }
-    }
+    #ifdef DEBUG
+    printf("\n");
+    #endif
 }
