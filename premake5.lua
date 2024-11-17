@@ -1,7 +1,7 @@
 
 ---@diagnostic disable: undefined-global, undefined-field
 workspace "Chip8"
-    configurations { "Debug", "Release" }
+    configurations { "debug", "release" }
 
 project "Chip8"
     kind "ConsoleApp"
@@ -38,11 +38,11 @@ project "Chip8"
         "X11"
     }
 
-    filter "configurations:Debug"
+    filter "configurations:debug"
         defines { "DEBUG" }
         symbols "On"
 
-    filter "configurations:Release"
+    filter "configurations:release"
         defines { "NDEBUG" }
         optimize "On"
 
@@ -50,7 +50,7 @@ newoption {
     trigger = "config",
     value = "Configuration",
     description = "Choose the build configuration (Debug or Release)",
-    default = "Debug"
+    default = "debug"
 }
         
 newoption {
@@ -95,6 +95,7 @@ newaction {
             return
         end
 
+        -- Create compiler.cfg file
         local config_file = "compiler.cfg"
         local file = io.open(config_file, "w")
         if file then
@@ -112,8 +113,8 @@ newaction {
     trigger = "run",
     description = "Run the compiled program",
     execute = function ()
-        -- Get configuration from options or default to Debug
-        local config = _OPTIONS["config"] or "debug"
+        -- Get configuration from options
+        local config = _OPTIONS["config"]
         local exe_path = string.format("output/%s/Chip8", config)
 
         -- Check if the executable exists
@@ -136,8 +137,8 @@ newaction {
     description = "Generate build files and compile the project",
     execute = function ()
         -- Get generator and configuration options
-        local generator = _OPTIONS["generator"] or "gmake2"
-        local config = _OPTIONS["config"] or "debug"
+        local generator = _OPTIONS["generator"]
+        local config = _OPTIONS["config"]
 
         -- Step 1: Generate build files
         print("Generating build files using: " .. generator)
