@@ -1,8 +1,7 @@
-#include <chip8.h>
-#include <stdio.h>
-#include <display.h>
-#include <keyboard.h>
 #include <math.h>
+#include <stdio.h>
+#include "chip8.h"
+#include "display.h"
 
 // -----------------------------
 // from https://www.raylib.com/examples.html

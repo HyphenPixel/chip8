@@ -7,16 +7,14 @@
  */
 
 #pragma once
-#include <chip8.h>
+#include "chip8.h"
 #include <stdint.h>
 #include <raylib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <keyboard.h>
 #include <unistd.h>
-#include <keyboard.h>
 
 /**
  * @brief Checks if a specific bit is set in a register.
@@ -103,6 +101,18 @@ static const u8 font[] = {
     0xE0, 0x90, 0x90, 0x90, 0xE0, // D
     0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
+
+/**
+ * @brief CHIP-8 key map.
+ *
+ * Maps modern keyboard keys to CHIP-8 keypad keys
+ */
+static const int keyMap[16] = {
+    KEY_X, KEY_ONE, KEY_TWO, KEY_THREE,
+    KEY_Q, KEY_W, KEY_E, KEY_A, 
+    KEY_S, KEY_D, KEY_Z, KEY_C, 
+    KEY_FOUR, KEY_R, KEY_F, KEY_V
 };
 
 /**
