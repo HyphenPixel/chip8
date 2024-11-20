@@ -1,4 +1,4 @@
-#include <chip8.h>
+#include "chip8.h"
 
 #define LOAD_ADDRESS 0x200
 #define FONT_SPRITE_HEIGHT 5
