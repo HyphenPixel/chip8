@@ -1,5 +1,5 @@
 # Another Chip8 Interpreter
-This is just a simple chip8 interpreter that is written in pure C using Raylib for the rendering and sound.
+I've been wanting to make an emulator for a while and I finally got around to doing that. My goal was to learn emulation, among other things. I would like to comeback to this eventually and improve it or maybe do it all over again with my new found knowlege.
 
 ### Building Chip8
 A few prerequisites:
@@ -13,11 +13,11 @@ Build Instructions:
 git clone https://github.com/HyphenPixel/chip8.git
 cd chip8
 
-# If you want to use a defferent compiler you can choose either GCC or Clang (Default: GCC)
+# If you want to use a defferent compiler you can choose either GCC or Clang 
+# (Default: GCC)
 premake5 cc '<gcc|clang>'
 
-# Generates make files with a specified configuration and generator (i.e. gmake2, vs2022, etc...)
-# The program will be put in the 'output' directory in either the 'release' or 'debug' sub-directory depending on the configuration
+# Builds the program using a specified generator 
 # (Defaults: config=Debug, generator=gmake2)
 premake5 build --config='<release|debug>' --generator='<generator>'
 
@@ -25,9 +25,9 @@ premake5 build --config='<release|debug>' --generator='<generator>'
 # (Defaults: config=Debug, rom=None)
 premake5 run --config='<release|debug>' --rom='<path/to/rom_file>'
 ```
-To run the interpreter you can ues either command:
+To run the interpreter you can use either command:
 1. `premake5 run --config='<release|debug>' --rom='<path/to/rom_file>'`
-2. `./output/<configuration>/Chip8 <path/to/rom_file>`
+2. `./output/<release|debug>/Chip8 <path/to/rom_file>`
 
 The main executable doesn't *need* to be in any particular folder so you can move it to somewhere more convenient
 
