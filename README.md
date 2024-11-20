@@ -22,7 +22,7 @@ premake5 cc '<gcc|clang>'
 premake5 build --config='<release|debug>' --generator='<generator>'
 
 # Runs the interpreter with the specified rom file
-# (Defaults: config=Debug, rom=None)
+# (Defaults: config=debug, rom=None)
 premake5 run --config='<release|debug>' --rom='<path/to/rom_file>'
 ```
 To run the interpreter you can use either command:
