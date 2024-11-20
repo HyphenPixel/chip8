@@ -31,8 +31,6 @@ typedef struct {
  */
 Canvas* initCanvas(Color c1, Color c2);
 
-
-
 /**
  * @brief Draws the contents of the CHIP-8 emulator onto the canvas.
  *
@@ -40,8 +38,6 @@ Canvas* initCanvas(Color c1, Color c2);
  * @param cpu Pointer to the CHIP-8 CPU state to render.
  */
 void draw(Canvas* canvas, Chip8* cpu);
-
-
 
 /**
  * @brief Cleans up resources associated with a Canvas object.
