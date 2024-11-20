@@ -21,7 +21,14 @@ void loadRom(Chip8* cpu, const char* romFile) {
         return;
     }
 
-    fread(&cpu->ram[LOAD_ADDRESS], sizeof(unsigned char), romSize, rom);
+    size_t bytes = fread(&cpu->ram[LOAD_ADDRESS], sizeof(unsigned char), romSize, rom);
+    if (sizeof(unsigned char) < bytes ) {
+        if (feof(rom)) {
+            printf("EOF Reached\n");
+        } else if (ferror(rom)) {
+            perror("Error reading file\n");
+        }
+    }
 
     fclose(rom);
 }
