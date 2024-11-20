@@ -14,7 +14,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
+#ifdef DEBUG
 #include <unistd.h>
+#endif
 
 /**
  * @brief Checks if a specific bit is set in a register.
