@@ -13,7 +13,7 @@ Build Instructions:
 git clone https://github.com/HyphenPixel/chip8.git
 cd chip8
 
-# If you want to use a defferent compiler you can choose either GCC or Clang 
+# If you want to use a different compiler you can choose either GCC or Clang 
 # (Default: GCC)
 premake5 cc '<gcc|clang>'
 
