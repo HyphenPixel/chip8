@@ -18,7 +18,7 @@ cd chip8
 premake5 cc '<gcc|clang>'
 
 # Builds the program using a specified generator 
-# (Defaults: config=Debug, generator=gmake2)
+# (Defaults: config=debug, generator=gmake2)
 premake5 build --config='<release|debug>' --generator='<generator>'
 
 # Runs the interpreter with the specified rom file
