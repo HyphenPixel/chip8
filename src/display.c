@@ -1,4 +1,4 @@
-#include <chip8.h>
+#include "chip8.h"
 #include "display.h"
 
 Canvas* initCanvas(Color c1, Color c2) {
