@@ -1,5 +1,5 @@
 # Another Chip8 Interpreter
-I've been wanting to make an emulator for a while with the goal to learn emulation, among other things and I've finally got around to doing that. I would like to come back to this eventually and improve it or maybe do it all over again with my new found knowlege.
+I've been wanting to create an emulator for a while, with the goal of learning about emulation, among other things, and I've finally gotten around to doing it. I hope to revisit this project eventually to improve it or perhaps start over, applying my newfound knowledge.
 
 ### Building Chip8
 A few prerequisites:
