@@ -35,5 +35,7 @@ If you want to code your own roms or download some premade test roms you can go 
 
 ### Platform availablity
  - [x] Linux
+ - Raspberry PI
+     - [x] 5
  - [ ] Windows
  - [ ] Mac
